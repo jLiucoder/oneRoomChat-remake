@@ -38,7 +38,7 @@ Redis: Caching service for messages.
 Database: PostgreSQL database to store user and chat data.
 
 <h2>Architecture</h2>
-[!alt text](https://github.com/jLiucoder/oneRoomChat-remake/blob/main/Architecture.png)
+<img src="https://github.com/jLiucoder/oneRoomChat-remake/blob/main/Architecture.png" />
 
 <h3>Prerequisites</h3>
   
