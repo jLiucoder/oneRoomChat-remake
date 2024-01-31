@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       translate: {
         "minus-50": "-50%",
+        "plus-50": "50%",
       },
       backgroundImage: {
         "backgrond-image": "url(../src/assets/background.png)",
@@ -14,7 +15,7 @@ module.exports = {
         "chatList": "750px",
       },
       minHeight: {
-        "chatList": "750px",
+        "chatList": "550px",
       },
     },
   },

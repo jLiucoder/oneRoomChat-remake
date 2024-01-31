@@ -4,6 +4,7 @@ import {useEffect} from "react";
 import Avater from "../../components/Avater";
 import moment from "moment";
 import {updateProfileAPI} from "../../apis/user";
+import {updateProfile} from "../../store/modules/user";
 
 const Profile = () => {
     const user = useSelector((state) => state.user);
@@ -20,31 +21,22 @@ const Profile = () => {
             email: email,
             dob: dob ? moment(dob,"YYYY-MM-DD") : null,
         });
-    }, [fullname, email]);
+    }, [fullname, email, dispatch]);
 
     const onFinish = async (values) => {
-
-        // values.dob = values.dob;
-        console.log(values);
         const newUser = {
             fullName: values.fullName,
             email: values.email,
             username: user.userInfo.username,
-
-            // dob: values.dob,
             userId: user.userInfo.userId,
         }
-
-        const response = await updateProfileAPI(newUser);
-        console.log(response);
+        await dispatch(updateProfile(newUser));
     }
     return (
         <div className="">
             <h1 className="pl-6 pt-6">{user.userInfo.username} Profile</h1>
             <div className="flex justify-center items-start gap-4">
-                {/*<div className="pl-20 w-1/4 pt-20">*/}
-                {/*    <Avater/>*/}
-                {/*</div>*/}
+
             <Form className="w-1/4 pt-2 pr-20" form={userForm} validateTrigger="onBlur" onFinish={onFinish} >
                 <h3 className="pl-6 pt-1 text-slate-300">Full Name</h3>
                 <Form.Item

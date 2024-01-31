@@ -90,7 +90,7 @@ const Chat = () => {
 
 
     return (
-        <div className="">
+        <div className="flex flex-col h-full">
             <div className="flex w-full items-center pt-6 pl-4">
                 <h1 className="">Chat</h1>
                 <div className="flex justify-center w-4/5">
@@ -114,7 +114,7 @@ const Chat = () => {
                 </div>
             </div>
 
-            <div id="message-container" className="min-h-chatList max-h-chatList  overflow-y-auto pt-7">
+            <div id="message-container" className=" flex-grow overflow-y-auto mb-20">
 
                 {messageList.map((message) => (
                     <ChatBubble key={message.msgId} message={message.messageText} user={message.username}
@@ -124,7 +124,7 @@ const Chat = () => {
 
             </div>
 
-            <div className="pt-7 w-full pt-7 flex justify-center">
+            <div className="flex fixed bottom-10 justify-center left-0 right-0 px-4 pb-4">
                 <Form className="w-3/5 h-6 flex" form={form}
                       onFinish={onFinish}>
                     <Form.Item

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {getUserAPI, loginAPI} from "../../apis/user";
+import {getUserAPI, loginAPI, updateProfileAPI} from "../../apis/user";
 import {getTokenKey, setTokenKey} from "../../util/token";
 
 const userSlice = createSlice({
@@ -14,6 +14,9 @@ const userSlice = createSlice({
         setUserInfo(state, action) {
             state.userInfo = action.payload;
 
+        },
+        updateUserInfo(state, action) {
+            state.userInfo = {...state.userInfo, ...action.payload};
         },
         setToken(state, action) {
             state.token = action.payload;
@@ -34,7 +37,7 @@ const userSlice = createSlice({
     },
 });
 
-const { setToken, setUserInfo, setId ,clearUserInfo} = userSlice.actions;
+const { setToken, setUserInfo, setId ,clearUserInfo,updateUserInfo} = userSlice.actions;
 
 // encapuslate the APIs to api folder for easier management
 const fetchLogin = (loginForm) => {
@@ -55,9 +58,15 @@ const fetchUserInfo = () => {
     };
 }
 
+const updateProfile = (newUser) => {
+    return async (dispatch) => {
+        const res = await updateProfileAPI(newUser);
+        dispatch(updateUserInfo(res));
+    };
+};
 
 
 const userReducer = userSlice.reducer;
-export { fetchLogin, fetchUserInfo, clearUserInfo };
+export { fetchLogin, fetchUserInfo, clearUserInfo,updateProfile };
 
 export default userReducer;
