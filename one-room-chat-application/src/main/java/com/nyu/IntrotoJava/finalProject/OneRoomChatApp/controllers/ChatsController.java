@@ -44,7 +44,6 @@ public class ChatsController {
 				response.add(tempChat);
 			}
 
-
 			log.info("the chats are from cache");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}else{

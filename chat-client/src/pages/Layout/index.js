@@ -32,7 +32,6 @@ const ClientLayout = () => {
   const nav = useNavigate();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user);
-  const [topUsers, setTopUsers] = useState([]);
   function onMenuClick(route) {
     nav(route.key);
   }
@@ -55,33 +54,6 @@ const ClientLayout = () => {
     nav("/login");
   }
 
-  // const getTopUser = async () => {
-  //   const users = await getTopUsersAPI();
-  //   setTopUsers(userInfoProcess(users)); // Assuming userInfoProcess formats the data as needed
-  // };
-
-  const getTopUser = useCallback(async () => {
-      const users = await getTopUsersAPI();
-      setTopUsers(userInfoProcess(users));
-  }, []);
-
-  function onContent() {
-
-    return (
-        <List
-            itemLayout="horizontal"
-            dataSource={topUsers}
-            renderItem={(item, index) => (
-                <List.Item>
-                  <List.Item.Meta
-                      title={<a>{item}</a>}
-                  />
-                </List.Item>
-            )}
-        />
-
-    )
-  }
 
   return (
     <Layout className="h-svh overflow-none">
@@ -97,13 +69,9 @@ const ClientLayout = () => {
           onClick={logoClick}
         />
         <div className="m-2 mt-6 ml-auto flex items-center">
-          <Popover content={onContent} title="Top Active User" trigger="hover" onOpenChange={(visible) => {
-            if (visible) {
-              getTopUser();
-            }
-          }}>
+
             <span className="text-white mr-4">{currentUser.userInfo.username === undefined? "login to continue": "Hi! "+currentUser.userInfo.username}</span>
-          </Popover>
+
 
           <span className="text-white mr-4">
             <Popconfirm

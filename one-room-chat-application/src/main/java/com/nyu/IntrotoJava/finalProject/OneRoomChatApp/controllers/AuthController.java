@@ -7,6 +7,7 @@ import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.request.RegisterUserReque
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.response.LoginResponse;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.services.UsersService;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.JwtUtils;
+import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.KafkaUtil;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class AuthController {
     @Autowired
     private UsersService usersService;
     @Autowired
+    private KafkaUtil kafkaUtil;
+    @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private Gson gson;
@@ -49,22 +52,12 @@ public class AuthController {
         System.out.println(newUser.toString());
 //        adding to kafka mq for async processing
         try {
-        	kafkaTemplate.send(USER_REQS_TOPIC, gson.toJson(newUser));
+            kafkaUtil.addUserPacket(USER_REQS_TOPIC, gson.toJson(newUser));
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(Result.success("User registration in process"));
         } catch (Exception e) {
         	log.error("Error sending message to kafka");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.error("Error sending message to kafka"));
         }
-
-//        all these goes to second server
-//        Users checkUserExist = usersService.findUserByUserName(newUser.getUsername());
-//
-//        if(checkUserExist != null){
-//            return ResponseEntity.badRequest().body(Result.error("Username already exists"));
-//        }
-//        usersService.addUser(newUser);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(Result.success("User successfully registered"));
     }
 
     @PostMapping("/login")
@@ -89,6 +82,7 @@ public class AuthController {
             loginResponse.setUserId(userMatched.getUserId());
             loginResponse.setUsername(userMatched.getUsername());
             loginResponse.setToken(token);
+
             return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 
         }

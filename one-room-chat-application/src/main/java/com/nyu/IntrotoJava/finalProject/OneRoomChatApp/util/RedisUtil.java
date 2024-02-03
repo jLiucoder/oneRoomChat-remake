@@ -40,5 +40,6 @@ public class RedisUtil {
         redisTemplate.expire(key, CACHE_TIMEOUT, TimeUnit.MINUTES);
         return redisTemplate.opsForList().range(key,0,-1);
     }
+
 }
 

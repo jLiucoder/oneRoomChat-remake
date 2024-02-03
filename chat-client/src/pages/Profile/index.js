@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Button, DatePicker, Form, Input} from "antd";
+import {Button, DatePicker, Form, Input, message} from "antd";
 import {useEffect} from "react";
 import Avater from "../../components/Avater";
 import moment from "moment";
@@ -30,6 +30,7 @@ const Profile = () => {
             username: user.userInfo.username,
             userId: user.userInfo.userId,
         }
+        message.success("Profile updated successfully, refresh to see changes");
         await dispatch(updateProfile(newUser));
     }
     return (

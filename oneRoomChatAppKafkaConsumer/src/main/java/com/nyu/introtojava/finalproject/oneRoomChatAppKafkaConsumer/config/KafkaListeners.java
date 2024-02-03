@@ -1,12 +1,14 @@
 package com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.config;
 
 import com.google.gson.Gson;
+import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.constants.UserOperations;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.dtos.AllChatsResponse;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.models.Chats;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.models.Users;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.dtos.ChatsDto;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.services.ChatsService;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.services.UsersService;
+import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.utils.KafkaUnifiedUserPacket;
 import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +36,22 @@ public class KafkaListeners {
         System.out.println(data + " received by user listener");
 
         try{
-            Users user = gson.fromJson(data, Users.class);
-            usersService.addUser(user);
-        } catch (Exception e){
+            KafkaUnifiedUserPacket userPacket = gson.fromJson(data, KafkaUnifiedUserPacket.class);
+            log.info("userPacket: "+userPacket.toString());
+            if(userPacket.getUserOperation().equals(UserOperations.SAVE_USER)){
+                Users user = gson.fromJson(userPacket.getUserJson(), Users.class);
+                log.info("user: "+user.toString());
+                usersService.saveUser(user);
+            }
+            else if(userPacket.getUserOperation().equals(UserOperations.ADD_USER)){
+                Users user = gson.fromJson(userPacket.getUserJson(), Users.class);
+                log.info("user: "+user.toString());
+                usersService.addUser(user);
+            }
+        }catch (Exception e){
             System.out.println("Error: " + e.getMessage());
         }
+
     }
 
     @KafkaListener(topics = CHAT_REQS_TOPIC, groupId = "group")

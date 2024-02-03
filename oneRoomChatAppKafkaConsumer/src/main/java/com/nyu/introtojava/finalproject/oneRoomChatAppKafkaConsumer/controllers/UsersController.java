@@ -1,21 +1,19 @@
-package com.nyu.IntrotoJava.finalProject.OneRoomChatApp.controllers;
-
-import java.util.*;
-import java.util.Optional;
+package com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.controllers;
 
 import com.google.gson.Gson;
-import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.KafkaUtil;
-import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.RedisUtil;
+
+
+import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.models.Users;
+import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.services.UserServiceImpl;
+import com.nyu.introtojava.finalproject.oneRoomChatAppKafkaConsumer.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.models.Users;
-import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.services.UserServiceImpl;
-
-import static com.nyu.IntrotoJava.finalProject.OneRoomChatApp.config.KafkaTopicConfig.USER_REQS_TOPIC;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -24,8 +22,6 @@ public class UsersController {
 
 	@Autowired
 	private UserServiceImpl userService;
-	@Autowired
-	private KafkaUtil kafkaUtil;
 	@Autowired
 	private RedisUtil redisUtil;
 	@Autowired
@@ -58,7 +54,7 @@ public class UsersController {
 	}
 
 	@PostMapping()
-	public ResponseEntity saveUser(@RequestBody Users user) {
+	public Users saveUser(@RequestBody Users user) {
 		Optional<Users> u = userService.findUserById(user.getUserId());
 		if(u.isEmpty()){
 			return null;
@@ -68,17 +64,8 @@ public class UsersController {
 		realUser.setFullName(user.getFullName());
 		realUser.setEmail(user.getEmail());
 		realUser.setDOB(user.getDOB());
-
-		try{
-			kafkaUtil.saveUserPacket(USER_REQS_TOPIC,gson.toJson(realUser));
-		}catch (Exception e){
-			log.error("Error in saving user to kafka" + e.getMessage());
-			return ResponseEntity.status(500).body("Error in sending user to kafka");
-		}
-		return ResponseEntity.status(200).body("User saving in process");
-
+		return userService.saveUser(realUser);
 	}
-
 
 //	@PostMapping("")
 //	public  

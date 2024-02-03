@@ -1,19 +1,20 @@
 import {useNavigate} from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
-import {getChatsAPI} from "../../apis/user";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {getChatsAPI, getTopUsersAPI} from "../../apis/user";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import ChatBubble from "../../components/ChatBubble";
-import {Button, Form, Input, Modal} from "antd";
+import {Button, Form, Input, List, Modal, Popover} from "antd";
 import {SendOutlined} from "@ant-design/icons";
 import {useSelector} from "react-redux";
 import SearchBox from "../../components/SearchBox";
+import userInfoProcess from "../../util/userInfoProcess";
 
 const Chat = () => {
 
     const currentUser = useSelector((state) => state.user);
     const [client, setClient] = useState(null);
-
+    const [topUsers, setTopUsers] = useState([]);
     const navigate = useNavigate();
     const [messageList, setMessageList] = useState([]);
     const [form] = Form.useForm();
@@ -29,6 +30,28 @@ const Chat = () => {
         setIsModalOpen(false)
     }
 
+    const getTopUser = useCallback(async () => {
+        const users = await getTopUsersAPI();
+        setTopUsers(userInfoProcess(users));
+    }, []);
+
+    function onContent() {
+
+        return (
+            <List
+                itemLayout="horizontal"
+                dataSource={topUsers}
+                renderItem={(item, index) => (
+                    <List.Item>
+                        <List.Item.Meta
+                            title={<a>{item}</a>}
+                        />
+                    </List.Item>
+                )}
+            />
+
+        )
+    }
     const onFinish = (values) => {
 
         let newMessage = JSON.stringify({
@@ -37,12 +60,17 @@ const Chat = () => {
             userId: localStorage.getItem("userId"),
             username: currentUser.userInfo.username,
         })
-        form.resetFields();
+
         client.send("/app/chat", {}, newMessage);
+        form.resetFields();
+
+        setTimeout(() => {
+            inputRef.current.focus();
+        }, 0);
     }
 
-    const messagesEndRef = useRef(null);
-
+    const inputRef = useRef(null);
+    const searchRef = useRef(null);
     const scrollToBottom = () => {
         const scrollContainer = document.getElementById('message-container');
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -50,6 +78,7 @@ const Chat = () => {
 
     const handleSearchResults = (results) => {
         setSearchTextRes(results)
+
     }
 
     useEffect(() => {
@@ -86,20 +115,32 @@ const Chat = () => {
             }
         }
     }, [messageList]);
-    // console.log(messageList);
 
+    const [focusInput, setFocusInput] = useState(() => () => {});
+    const afterOpen = () => {
+        focusInput();
+    };
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex w-full items-center pt-6 pl-4">
+                <Popover content={onContent} title="Top Active User" trigger="hover" onOpenChange={(visible) => {
+                    if (visible) {
+                        getTopUser();
+                    }
+                }}>
                 <h1 className="">Chat</h1>
+            </Popover>
                 <div className="flex justify-center w-4/5">
 
                     <Button className="bg-slate-500 w-90" onClick={handleSeach}>Seach chat</Button>
                     <Modal open={isModalOpen} onOk={handleCancel} onCancel={handleCancel}
                            okButtonProps={{style: {display: 'none'}}} cancelButtonProps={{style: {display: 'none'}}}
-                           closable={false}>
-                        <SearchBox onSearch={handleSearchResults}/>
+                           closable={false}
+                           afterOpenChange={open => open && afterOpen()}
+
+                    >
+                        <SearchBox onSearch={handleSearchResults} setFocusInputMethod={setFocusInput}/>
                         <div className="flex flex-col">
                             {searchTextRes.map((searchText) => (
                                 <div className="flex flex-row">
@@ -114,7 +155,7 @@ const Chat = () => {
                 </div>
             </div>
 
-            <div id="message-container" className=" flex-grow overflow-y-auto mb-20">
+            <div id="message-container" className=" flex-grow overflow-y-auto pb-20">
 
                 {messageList.map((message) => (
                     <ChatBubble key={message.msgId} message={message.messageText} user={message.username}
@@ -124,7 +165,7 @@ const Chat = () => {
 
             </div>
 
-            <div className="flex fixed bottom-10 justify-center left-0 right-0 px-4 pb-4">
+            <div className="flex fixed bottom-5 justify-center left-0 right-0 px-4 pb-4">
                 <Form className="w-3/5 h-6 flex" form={form}
                       onFinish={onFinish}>
                     <Form.Item
@@ -134,7 +175,7 @@ const Chat = () => {
                             title: 'message',
                         }}
                     >
-                        <Input className="h-12" placeholder="be nice!" autoComplete="off"/>
+                        <Input ref={inputRef} className="h-12" placeholder="be nice!" autoComplete="off"/>
                     </Form.Item>
                     <Form.Item>
                         <Button className="h-12" type="primary" htmlType="submit"><SendOutlined/></Button>

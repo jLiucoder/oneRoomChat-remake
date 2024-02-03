@@ -6,6 +6,7 @@ const ChatBubble = (props) => {
     // console.log(props.ifMine)
     let mine = props.ifMine;
     let p = props.chatBubble;
+    let userBadge = props.user.charAt(0);
     return (
 
             mine && p ?
@@ -19,13 +20,13 @@ const ChatBubble = (props) => {
                     </div>
 
                     <div className="ml-3">
-                        <Avatar size="large">{props.user}</Avatar>
+                        <Avatar size="large">{userBadge}</Avatar>
                     </div>
                 </div>
                 :
                 <div className="pl-5 pt-2 flex items-center">
                     <div className="pr-3">
-                        <Avatar size="large">{props.user}</Avatar>
+                        <Avatar size="large">{userBadge}</Avatar>
                     </div>
 
                     <div className="flex flex-col items-start">

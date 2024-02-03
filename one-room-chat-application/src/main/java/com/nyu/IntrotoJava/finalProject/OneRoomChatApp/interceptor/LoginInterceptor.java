@@ -35,8 +35,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         if(!StringUtils.hasLength(jwt)){
             log.info("jwt is empty");
-//            Result error = Result.error();
-            
 
             String notLogin = gson.toJson(ResponseEntity.badRequest().body(Result.error("NOT_LOGGED_IN")));
             response.getWriter().write(notLogin);

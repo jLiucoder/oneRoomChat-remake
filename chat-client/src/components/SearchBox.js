@@ -3,11 +3,15 @@ import {Button, Input, Result} from "antd";
 import {createRef, useEffect, useRef, useState} from "react";
 import {searchChatAPI} from "../apis/user";
 
-const SearchBox= ({onSearch})=>{
-    const inputRef = useRef(null);
+const SearchBox= ({onSearch, setFocusInputMethod})=>{
+    const searchRef = useRef(null);
+
+    useEffect(() => {
+        // Expose focus method to parent
+        setFocusInputMethod(() => () => searchRef.current?.focus());
+    }, [setFocusInputMethod]);
     const onChange = async (e) => {
         const value = e.target.value;
-        // setInputText(value);
         if(value === ""){
             onSearch([])
             return;
@@ -25,7 +29,7 @@ const SearchBox= ({onSearch})=>{
 
     return (
         <div className="h-full w-full">
-            <Input className="h-full w-full" type="text" placeholder="Search chat" onChange={onChange} ref={inputRef}/>
+            <Input className="h-full w-full" type="text" placeholder="Search chat" onChange={onChange} ref={searchRef}/>
         </div>
     )
 }
