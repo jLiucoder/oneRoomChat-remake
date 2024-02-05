@@ -38,6 +38,9 @@ public class Users {
 	@Column(name= "user_password", nullable = false)
 	private String password;
 
+	@Column(name="user_pic", nullable = true)
+	private String profilePicture;
+
 	public String getEmail() {
 		return email;
 	}
@@ -54,7 +57,13 @@ public class Users {
 		this.DOB = DOB;
 	}
 
+	public String getProfilePicture() {
+		return profilePicture;
+	}
 
+	public void setProfilePicture(String profilePicture) {
+		this.profilePicture = profilePicture;
+	}
 
     public Long getUserId() {
 		return userId;

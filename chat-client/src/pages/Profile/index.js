@@ -1,11 +1,10 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Button, DatePicker, Form, Input, message} from "antd";
 import {useEffect} from "react";
-import Avater from "../../components/Avater";
 import moment from "moment";
 import {updateProfileAPI} from "../../apis/user";
-import {updateProfile} from "../../store/modules/user";
-
+import {fetchUserInfo, updateProfile} from "../../store/modules/user";
+import ProfilePicture from "../../components/ProfilePicture";
 const Profile = () => {
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
@@ -21,8 +20,12 @@ const Profile = () => {
             email: email,
             dob: dob ? moment(dob,"YYYY-MM-DD") : null,
         });
+
     }, [fullname, email, dispatch]);
 
+    useEffect(() => {
+        dispatch(fetchUserInfo());
+    },[dispatch]);
     const onFinish = async (values) => {
         const newUser = {
             fullName: values.fullName,
@@ -37,57 +40,63 @@ const Profile = () => {
         <div className="">
             <h1 className="pl-6 pt-6">{user.userInfo.username} Profile</h1>
             <div className="flex justify-center items-start gap-4">
+                <div className="w-1/4 flex justify-center pt-14"><ProfilePicture/></div>
 
-            <Form className="w-1/4 pt-2 pr-20" form={userForm} validateTrigger="onBlur" onFinish={onFinish} >
-                <h3 className="pl-6 pt-1 text-slate-300">Full Name</h3>
-                <Form.Item
-                    name="fullName"
+                <div className="w-1/2">
+                    <Form className="w-1/4 pt-2 pr-20" form={userForm} validateTrigger="onBlur" onFinish={onFinish} >
 
-                    rules={
-                    [
-                        {
-                            required: true,
-                            message: "Modify your full name",
-                        },
-                    ]}
-                >
-                    <Input size="large"  placeholder={user.userInfo.fullName}/>
-                </Form.Item>
-                <h3 className="pl-6 pt-1 text-slate-300">Email</h3>
-                <Form.Item
-                    name="email"
-                    rules={
-                        [
-                            {
-                                required: true,
-                                message: "Modify your email",
-                            },
-                        ]}
-                >
-                    <Input size="large"  placeholder={user.userInfo.email}/>
-                </Form.Item>
-                {/*<h3 className="pl-6 pt-1 text-slate-300">DOB</h3>*/}
-                {/*<Form.Item*/}
-                {/*    name="dob"*/}
-                {/*    rules={*/}
-                {/*    [*/}
-                {/*        {*/}
-                {/*            required: true,*/}
-                {/*            message: "Modify your DOB",*/}
-                {/*        },*/}
-                {/*    ]}*/}
-                {/*>*/}
-                {/*    <DatePicker format="YYYY-MM-DD" />*/}
-                {/*</Form.Item>*/}
+                        <h3 className="pl-6 pt-1 text-slate-300">Full Name</h3>
+                        <Form.Item
+                            name="fullName"
+
+                            rules={
+                                [
+                                    {
+                                        required: true,
+                                        message: "Modify your full name",
+                                    },
+                                ]}
+                        >
+                            <Input size="large"  placeholder={user.userInfo.fullName}/>
+                        </Form.Item>
+                        <h3 className="pl-6 pt-1 text-slate-300">Email</h3>
+                        <Form.Item
+                            name="email"
+                            rules={
+                                [
+                                    {
+                                        required: true,
+                                        message: "Modify your email",
+                                    },
+                                ]}
+                        >
+                            <Input size="large"  placeholder={user.userInfo.email}/>
+                        </Form.Item>
+                        {/*<h3 className="pl-6 pt-1 text-slate-300">DOB</h3>*/}
+                        {/*<Form.Item*/}
+                        {/*    name="dob"*/}
+                        {/*    rules={*/}
+                        {/*    [*/}
+                        {/*        {*/}
+                        {/*            required: true,*/}
+                        {/*            message: "Modify your DOB",*/}
+                        {/*        },*/}
+                        {/*    ]}*/}
+                        {/*>*/}
+                        {/*    <DatePicker format="YYYY-MM-DD" />*/}
+                        {/*</Form.Item>*/}
 
 
-                <Form.Item>
-                    <Button className="w-3/5" type="primary" htmlType="submit" size="large" block>
-                        Apply Changes
-                    </Button>
-                </Form.Item>
-            </Form>
+                        <Form.Item>
+                            <Button className="w-3/5" type="primary" htmlType="submit" size="large" block>
+                                Apply Changes
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+
             </div>
+
         </div>
     );
 };

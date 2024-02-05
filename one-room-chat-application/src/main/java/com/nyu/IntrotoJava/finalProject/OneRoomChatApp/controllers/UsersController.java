@@ -3,6 +3,7 @@ package com.nyu.IntrotoJava.finalProject.OneRoomChatApp.controllers;
 import java.util.*;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.KafkaUtil;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.RedisUtil;
@@ -56,6 +57,17 @@ public class UsersController {
 
 		return users;
 	}
+	@PostMapping("profile-picture")
+	public Users saveUserProfilePicture(@RequestBody ObjectNode objectNode) {
+		String userId = objectNode.get("userId").asText();
+		String url = objectNode.get("url").asText();
+		Users user = userService.findUserById(Long.parseLong(userId)).get();
+		log.info("before setting url" + user.toString());
+		user.setProfilePicture(url);
+		log.info("after setting url" + user.toString());
+		userService.saveUser(user);
+		return user;
+	}
 
 	@PostMapping()
 	public ResponseEntity saveUser(@RequestBody Users user) {
@@ -68,6 +80,7 @@ public class UsersController {
 		realUser.setFullName(user.getFullName());
 		realUser.setEmail(user.getEmail());
 		realUser.setDOB(user.getDOB());
+//		realUser.
 
 		try{
 			kafkaUtil.saveUserPacket(USER_REQS_TOPIC,gson.toJson(realUser));

@@ -53,3 +53,19 @@ export function updateProfileAPI(data) {
         data: data,
     });
 }
+
+export function getPreSignedUrlAPI(file) {
+
+    return request({
+        url: `/storage/generate-presigned-url?filename=${file.name}&contentType=${file.type}&userId=${localStorage.getItem("userId")}`,
+        method: "GET"
+    });
+}
+
+export function saveProfilePictureAPI(data){
+    return request({
+        url: "/users/profile-picture",
+        method: "POST",
+        data: data,
+    });
+}

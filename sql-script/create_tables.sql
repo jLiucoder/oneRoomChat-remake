@@ -5,8 +5,9 @@ CREATE TABLE USERS (
   user_id SERIAL PRIMARY KEY,
   username TEXT NOT NULL unique,
   user_fullname TEXT NOT NULL,
-    user_DOB DATE DEFAULT now(),
-    user_email TEXT,
+  user_DOB DATE DEFAULT now(),
+  user_email TEXT,
+  user_pic TEXT,
   date_created date NOT NULL DEFAULT now(),
   user_password TEXT NOT NULL
 );
